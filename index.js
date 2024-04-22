@@ -1,9 +1,7 @@
 require("dotenv").config();
-
 const PORT = process.env.PORT || 8000;
 const express = require("express");
 const bodyParser = require("body-parser");
-// const getTools = require("./cmnd/constants/getTools");
 const app = express();
 const tools = require("./tools");
 app.use(bodyParser.json());
