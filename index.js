@@ -1,17 +1,40 @@
+require("dotenv").config();
+
 const PORT = process.env.PORT || 8000;
 const express = require("express");
 const bodyParser = require("body-parser");
-const getTools = require("./cmnd/contants/getTools");
+// const getTools = require("./cmnd/constants/getTools");
 const app = express();
-const postRunTool = require("./cmnd/contants/runTool");
+const tools = require("./tools");
 app.use(bodyParser.json());
 
 app.get("/cmnd-tools", (req, res) => {
-  const tools = getTools(req, res);
-  res.json(tools);
+  const getTools = () => {
+    const toolsMapped = tools.map((t) => {
+      return {
+        name: t.name,
+        description: t.description,
+        jsonSchema: t.parameters,
+        isDangerous: t.dangerous,
+        functionType: t.functionType,
+        isLongRunningTool: t.isLongRunningTool,
+        rerun: t.rerun,
+        rerunWithDifferentParameters: t.rerunWithDifferentParameters,
+      };
+    });
+    return { tools: toolsMapped };
+  };
+
+  const toolsResponse = getTools();
+  res.json(toolsResponse);
 });
 
-app.post("/run-cmnd-tool", postRunTool);
+app.post("/run-cmnd-tool", async (req, res) => {
+  const args = req.body;
+  const toolToRun = tools.find((t) => t.name === args.toolName);
+  const results = await toolToRun.runCmd(args.props);
+  res.send(results);
+});
 
 app.listen(PORT, () =>
   console.log(`server running on PORT http://localhost:${PORT}`)

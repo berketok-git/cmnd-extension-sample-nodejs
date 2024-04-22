@@ -1,33 +1,19 @@
+require("dotenv").config();
 const axios = require("axios");
 const yup = require("yup");
 const fs = require("fs");
-const yupToJsonSchema = require("../../yupToJsonSchema");
-const { json } = require("express");
-
-const noParamsSchema = yup.object({});
-
-const weatherCitySchema = yup.object({
-  city: yup.string().label("city").required("should be a string"),
-});
+const yupToJsonSchema = require("./yupToJsonSchema");
 
 const getProductSchema = yup.object({
   product: yup.string().label("product").required("should be a string"),
 });
-const getFilePathSchema = yup.object({
-  filePath: yup.string().label("filePath").required("should be a string"),
-});
-
-const noParamsJSONSchema = yupToJsonSchema(noParamsSchema);
-const getFilePathJSONSchema = yupToJsonSchema(getFilePathSchema);
 const getProductsJSONSchema = yupToJsonSchema(getProductSchema);
-const weatherCityJSONSchema = yupToJsonSchema(weatherCitySchema);
-
 const PRODUCT_FINDER = {
   name: "product_finder",
   description:
     "finds and returns dummy products details from json dummy datas based on the product name passed to it",
-  category: "communication",
-  subcategory: "hackathon",
+  category: "hackathon",
+  subcategory: "communication",
   functionType: "backend",
   dangerous: false,
   associatedCommands: [],
@@ -46,11 +32,16 @@ const PRODUCT_FINDER = {
     }
   },
 };
+
+const weatherCitySchema = yup.object({
+  city: yup.string().label("city").required("should be a string"),
+});
+const weatherCityJSONSchema = yupToJsonSchema(weatherCitySchema);
 const WEATHER_FROM_LOCATION = {
   name: "city_weather_data",
   description: "gets the weather details from a given city name",
-  category: "communication",
-  subcategory: "hackathon",
+  category: "hackathon",
+  subcategory: "communication",
   functionType: "backend",
   dangerous: false,
   associatedCommands: [],
@@ -59,23 +50,32 @@ const WEATHER_FROM_LOCATION = {
   rerun: true,
   rerunWithDifferentParameters: true,
   runCmd: async ({ city }) => {
-    const newApiKey = "47dc35b3d4b2404b5638555fdec29645";
+    const ApiKey = process.env.WEATHER_API_KEY;
     try {
       const { data } = await axios.get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${newApiKey}`
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${ApiKey}`
       );
-      return JSON.stringify(data);
+      return JSON.stringify({
+        weather: data.weather[0].description,
+        main: data.main,
+        coords: data.coord,
+      });
     } catch (err) {
       return "Error trying to execute the tool";
     }
   },
 };
-const JSON_FILE_READER = {
-  name: "json_file_reader",
+
+const getFilePathSchema = yup.object({
+  filePath: yup.string().label("filePath").required("should be a file path"),
+});
+const getFilePathJSONSchema = yupToJsonSchema(getFilePathSchema);
+const FILE_READER = {
+  name: "file_reader",
   description:
-    "gets the contents of the file given a filepath in the repository",
-  category: "communication",
-  subcategory: "hackathon",
+    "returns the contents of a file given its filepath in the repository",
+  category: "hackathon",
+  subcategory: "communication",
   functionType: "backend",
   dangerous: false,
   associatedCommands: [],
@@ -86,15 +86,13 @@ const JSON_FILE_READER = {
   runCmd: async ({ filePath }) => {
     try {
       const buffer = fs.readFileSync(filePath);
-      const dataString = buffer.toString("utf8");
-      const jsonData = JSON.parse(dataString);
-      const jsonString = JSON.stringify(jsonData);
-      return jsonString;
+      const fileContents = buffer.toString("utf8");
+      return fileContents;
     } catch (error) {
       return "An error ocured while looking for the file content";
     }
   },
 };
 
-const tools = [JSON_FILE_READER, PRODUCT_FINDER, WEATHER_FROM_LOCATION];
+const tools = [FILE_READER, PRODUCT_FINDER, WEATHER_FROM_LOCATION];
 module.exports = tools;
