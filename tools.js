@@ -10,8 +10,7 @@ const getProductSchema = yup.object({
 const getProductsJSONSchema = yupToJsonSchema(getProductSchema);
 const PRODUCT_FINDER = {
   name: "FASH",
-  description:
-    "find a suitable home",
+  description: "find a suitable home",
   category: "hackathon",
   subcategory: "communication",
   functionType: "backend",
@@ -23,16 +22,17 @@ const PRODUCT_FINDER = {
   rerunWithDifferentParameters: true,
   runCmd: async ({ product }) => {
     try {
+      const firstWord = product.split(" ")[0];
       const response = await axios({
-        method: 'post',
-        url: 'https://www.nyckel.com/v0.9/functions/s3t9ht858vbw6406/search?includeData=true',
+        method: "post",
+        url: "https://www.nyckel.com/v0.9/functions/s3t9ht858vbw6406/search?includeData=true",
         headers: {
-          'Authorization': 'Bearer ' + process.env.NYCKEL_API_KEY,
-          'Content-Type': 'application/json',
+          Authorization: "Bearer " + process.env.NYCKEL_API_KEY,
+          "Content-Type": "application/json",
         },
         data: {
-          "data": product
-        }
+          data: firstWord,
+        },
       });
       console.log(response.data);
       return JSON.stringify(response.data);
