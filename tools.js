@@ -9,9 +9,9 @@ const getProductSchema = yup.object({
 });
 const getProductsJSONSchema = yupToJsonSchema(getProductSchema);
 const PRODUCT_FINDER = {
-  name: "product_finder",
+  name: "FASH",
   description:
-    "finds and returns dummy products details from json dummy datas based on the product name passed to it",
+    "find a suitable home",
   category: "hackathon",
   subcategory: "communication",
   functionType: "backend",
