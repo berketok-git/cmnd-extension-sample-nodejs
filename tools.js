@@ -21,10 +21,10 @@ const PRODUCT_FINDER = {
   parameters: getProductsJSONSchema,
   rerun: true,
   rerunWithDifferentParameters: true,
-  runCmd: async ({ product }) => {
+  runCmd: async () => {
     try {
       const { data } = await axios.get(
-        `https://api.npoint.io/2c308c84cfe292772cdf/items/item/${encodeURIComponent(product)}`
+        `https://api.npoint.io/2c308c84cfe292772cdf/items/item/`
       );
       return JSON.stringify(data);
     } catch (err) {
