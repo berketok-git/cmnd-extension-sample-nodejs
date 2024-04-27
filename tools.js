@@ -24,7 +24,7 @@ const PRODUCT_FINDER = {
   runCmd: async ({ product }) => {
     try {
       const { data } = await axios.get(
-        `https://dummyjson.com/products/search?q=${encodeURIComponent(product)}`
+        `https://api.npoint.io/2c308c84cfe292772cdf/items/${encodeURIComponent(product)}`
       );
       return JSON.stringify(data);
     } catch (err) {
